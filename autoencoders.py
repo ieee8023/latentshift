@@ -6,19 +6,25 @@ sys.path.insert(0,"taming_transformers")
 import taming
 
 
-
 class Transformer(torch.nn.Module):
     
     def __init__(self, weights, resolution=256):
         super().__init__()
         
         if weights == "imagenet":
-            weights = "weights/2021-04-03T19-39-50_cin_transformer.pth"
-        elif weights == "celeba":
-            weights = "weights/2020-11-13T21-41-45_faceshq_transformer.pth"
+            weights = "./weights/2021-04-03T19-39-50_cin_transformer.pth"
+            url = "https://github.com/ieee8023/latentshift/releases/download/weights/2021-04-03T19-39-50_cin_transformer.pth"
+        elif weights == "faceshq":
+            weights = "./weights/2020-11-13T21-41-45_faceshq_transformer.pth"
+            url = "https://github.com/ieee8023/latentshift/releases/download/weights/2020-11-13T21-41-45_faceshq_transformer.pth"
+        
+        if not os.path.isfile(weights):
+            if download:
+                utils.download(url, weights)
+            else:
+                print("No weights found, specify download=True to download them.")
         
         self.model = torch.load(weights)
-        
         self.upsample = torch.nn.Upsample(size=(resolution, resolution), mode='bilinear', align_corners=False)
     
     def encode(self, x):
