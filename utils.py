@@ -1,5 +1,6 @@
+import os, sys
 import requests
-
+import pathlib
 
 # based on https://sumit-ghosh.com/articles/python-download-progress-bar/
 def download(url: str, filename: str):

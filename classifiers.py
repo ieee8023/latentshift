@@ -21,8 +21,8 @@ class ResNet50(torch.nn.Module):
 
 
 class FaceAttribute(torch.nn.Module):
-    def __init__(self):
-        super().__init__(download=False)
+    def __init__(self, download=False):
+        super().__init__()
 
         
         filename = "./weights/BranchedTiny.ckpt"
