@@ -1,8 +1,7 @@
-import sys, os
+import os
 import utils
 import torch
-import torch.nn.functional as F
-import pathlib
+import torchvision
 from attribute_classifier import BranchedTiny
 
 
@@ -21,10 +20,16 @@ class ResNet50(torch.nn.Module):
 
 
 class FaceAttribute(torch.nn.Module):
+    """A classifier trained on celeba attributes
+
+    Branched Multi-Task Networks: Deciding What Layers To Share
+    Simon Vandenhende, Stamatios Georgoulis, Bert De Brabandere, Luc Van Gool
+    British Machine Vision Virtual Conference
+    https://arxiv.org/abs/1904.02920
+    """
     def __init__(self, download=False):
         super().__init__()
 
-        
         filename = "./weights/BranchedTiny.ckpt"
         url = "https://github.com/ieee8023/latentshift/releases/download/weights/BranchedTiny.ckpt"
         
@@ -38,6 +43,7 @@ class FaceAttribute(torch.nn.Module):
         self.model = self.model.eval()
         
         self.targets = self.model.attributes
+        self.attributes = self.model.attributes
         
     def forward(self, x):
         return self.model(x)

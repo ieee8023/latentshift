@@ -1,8 +1,7 @@
-
 import torch
 import torch.nn as nn
-import os
 import torch.nn.functional as F
+
 
 class BranchedTinyAttr(nn.Module):
     def __init__(self, cfg):
@@ -27,9 +26,10 @@ class BranchedTinyAttr(nn.Module):
             y = y[:, self.idx]
         return y
 
+
 class BranchedTiny(nn.Module):
     def __init__(self, ckpt=None, width=64, img_size=(224,224)):
-        """From paper https://arxiv.org/pdf/1904.02920.pdf"""
+        """From paper https://arxiv.org/abs/1904.02920"""
         super().__init__()
         assert isinstance(img_size, tuple)
         self.w, self.img_size= width, img_size

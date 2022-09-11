@@ -1,12 +1,20 @@
-import sys, os
+import sys
+import os
 import torch
-import torch.nn.functional as F
 
-sys.path.insert(0,"taming_transformers")
+sys.path.insert(0, "taming_transformers")
 import taming
 import utils
 
 class Transformer(torch.nn.Module):
+    """These transformers are based on the first stage of the models
+    in the following work:
+
+    Taming Transformers for High-Resolution Image Synthesis
+    Patrick Esser and Robin Rombach and Björn Ommer
+    https://github.com/CompVis/taming-transformers
+    https://arxiv.org/abs/2012.09841
+    """
     
     def __init__(self, weights, resolution=256, download=False):
         super().__init__()
@@ -46,4 +54,3 @@ class Transformer(torch.nn.Module):
     
     def forward(self, x):
         return self.decode(self.encode(x))
-
