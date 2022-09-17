@@ -12,6 +12,10 @@ Watch a video: https://www.youtube.com/watch?v=1fxSDP8DheI
 The main diagram:
 ![latentshift.gif](docs/latentshift.gif)
 
+# Comparison
+
+![comparison.png](docs/comparison.png)
+
 # Getting Started
 
 ```python3
