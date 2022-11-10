@@ -12,7 +12,18 @@ Watch a video: https://www.youtube.com/watch?v=1fxSDP8DheI
 The main diagram:
 ![latentshift.gif](docs/latentshift.gif)
 
+
+# Example
+
+For a predicting of `smiling`
+
+![gen_sequence.png](docs/gen_sequence.png)
+
+![gen_big.png](docs/gen_big.png)
+
 # Comparison
+
+For a predicting of `pointy_nose`
 
 ![comparison.png](docs/comparison.png)
 
