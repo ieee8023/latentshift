@@ -19,7 +19,11 @@ For a predicting of `smiling`
 
 ![gen_sequence.png](docs/gen_sequence.png)
 
-![gen_big.png](docs/gen_big.png)
+| Counterfactual (smiling removed) | Base reconstruction |
+| ----------- | ----------- |
+| ![gen_bigg_cf.png](docs/gen_big_cf.png) | ![gen_bigg_base.png](docs/gen_big_base.png)  |
+
+
 
 # Comparison
 
