@@ -13,7 +13,17 @@ The main diagram:
 ![latentshift.gif](docs/latentshift.gif)
 
 
-# Example
+## Animations/GIFs
+
+| Smiling <img width="5000" height="1">| Arched Eyebrows<img width="5000" height="1">|
+| ----------- | ----------- |
+| <img src="docs/smiling.gif" width="100%"> |  <img src="docs/arched_eyebrows.gif" width="100%"> | 
+
+|Mouth Slightly Open <img width="5000" height="1"> | Young <img width="5000" height="1"> |
+| ----------- | ----------- |
+| <img src="docs/mouth_slightly_open.gif" width="100%"> |  <img src="docs/young.gif" width="100%"> | 
+
+# Smiling Sequence Example
 
 For a predicting of `smiling`
 
@@ -22,17 +32,6 @@ For a predicting of `smiling`
 | Counterfactual (smiling removed) | Base reconstruction |
 | ----------- | ----------- |
 | ![gen_bigg_cf.png](docs/gen_big_cf.png) | ![gen_bigg_base.png](docs/gen_big_base.png)  |
-
-## Animations/GIFs
-
-| Smiling | Arched Eyebrows| 
-| ----------- | ----------- |
-| <video src="https://user-images.githubusercontent.com/446367/204653789-2838eefb-fe03-4f3e-94d0-0f7990a7aca4.mp4"> |  <video src="https://user-images.githubusercontent.com/446367/204653885-c4902c93-02bc-45ba-8d18-df07fca7e9da.mp4"> | 
-
-|Mouth Slightly Open | Young |
-| ----------- | ----------- |
-|<video src="https://user-images.githubusercontent.com/446367/204653897-1c2e18a4-6a5d-4495-b565-0ea884402063.mp4"> | <video src="https://user-images.githubusercontent.com/446367/204653911-3e15b6bb-3dc1-4102-a2a3-52ad5f6608a5.mp4"> | 
-
 
 
 
