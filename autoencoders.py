@@ -1,12 +1,12 @@
 import sys
 import os
 import torch
-
-sys.path.insert(0, "taming_transformers")
-import taming
 import utils
+import taming.models.vqgan
+import omegaconf
 
-class Transformer(torch.nn.Module):
+
+class VQGAN(torch.nn.Module):
     """These transformers are based on the first stage of the models
     in the following work:
 
@@ -16,15 +16,17 @@ class Transformer(torch.nn.Module):
     https://arxiv.org/abs/2012.09841
     """
     
-    def __init__(self, weights, resolution=256, download=False):
+    def __init__(self, weights, download=True):
         super().__init__()
         
         if weights == "imagenet":
-            weights = "./weights/2021-04-03T19-39-50_cin_transformer.pth"
-            url = "https://github.com/ieee8023/latentshift/releases/download/weights/2021-04-03T19-39-50_cin_transformer.pth"
+            weights = "./weights/vqgan_imagenet_f16_1024.ckpt"
+            config = "./weights/vqgan_imagenet_f16_1024.yaml"
+            url = "https://github.com/ieee8023/latentshift/releases/download/weights/vqgan_imagenet_f16_1024.ckpt"
         elif weights == "faceshq":
-            weights = "./weights/2020-11-13T21-41-45_faceshq_transformer.pth"
-            url = "https://github.com/ieee8023/latentshift/releases/download/weights/2020-11-13T21-41-45_faceshq_transformer.pth"
+            weights = "./weights/2020-11-13T21-41-45_faceshq.pth"
+            config = "./weights/2020-11-13T21-41-45_faceshq.yaml"
+            url = "https://github.com/ieee8023/latentshift/releases/download/weights/2020-11-13T21-41-45_faceshq.pth"
         else:
             raise Exception("No weights specified")
         
@@ -34,12 +36,23 @@ class Transformer(torch.nn.Module):
             else:
                 print("No weights found, specify download=True to download them.")
         
+        try: 
+            c = omegaconf.OmegaConf.load(config)
+            self.config = c['model']['params']
+            self.model = taming.models.vqgan.VQModel(**self.config)
+        except:
+            raise Exception(f'Error creating model.')
+            
         try:
-            self.model = torch.load(weights)
+            a = torch.load(weights, map_location=torch.device('cpu'))
+            if 'state_dict' in a:
+                a = a['state_dict']
+            self.model.load_state_dict(a, strict=False);
         except:
             raise Exception(f'Error loading weights, try deleting them and redownloading: rm {weights}')
         
-        self.upsample = torch.nn.Upsample(size=(resolution, resolution), mode='bilinear', align_corners=False)
+        self.resolution = self.config['ddconfig']['resolution']
+        self.upsample = torch.nn.Upsample(size=(self.resolution, self.resolution), mode='bilinear', align_corners=False)
     
     def encode(self, x):
         x = (x*2 - 1.0)
