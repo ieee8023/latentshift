@@ -5,6 +5,9 @@ import utils
 import taming.models.vqgan
 import omegaconf
 
+baseurl = "https://github.com/ieee8023/latentshift/releases/download/weights/"
+weights_path = "./weights/"
+
 
 class VQGAN(torch.nn.Module):
     """These transformers are based on the first stage of the models
@@ -20,36 +23,35 @@ class VQGAN(torch.nn.Module):
         super().__init__()
         
         if weights == "imagenet":
-            weights = "./weights/vqgan_imagenet_f16_1024.ckpt"
-            config = "./weights/vqgan_imagenet_f16_1024.yaml"
-            url = "https://github.com/ieee8023/latentshift/releases/download/weights/vqgan_imagenet_f16_1024.ckpt"
+            weights = "vqgan_imagenet_f16_1024.ckpt"
+            config = "vqgan_imagenet_f16_1024.yaml"
         elif weights == "faceshq":
-            weights = "./weights/2020-11-13T21-41-45_faceshq.pth"
-            config = "./weights/2020-11-13T21-41-45_faceshq.yaml"
-            url = "https://github.com/ieee8023/latentshift/releases/download/weights/2020-11-13T21-41-45_faceshq.pth"
+            weights = "2020-11-13T21-41-45_faceshq.pth"
+            config = "2020-11-13T21-41-45_faceshq.yaml"
         else:
             raise Exception("No weights specified")
         
-        if not os.path.isfile(weights):
+        if (not os.path.isfile(weights)) or (not os.path.isfile(config)):
             if download:
-                utils.download(url, weights)
+                utils.download(baseurl + weights, weights_path + weights)
+                utils.download(baseurl + config, weights_path + config)
             else:
                 print("No weights found, specify download=True to download them.")
         
         try: 
-            c = omegaconf.OmegaConf.load(config)
+            c = omegaconf.OmegaConf.load(weights_path + config)
             self.config = c['model']['params']
             self.model = taming.models.vqgan.VQModel(**self.config)
         except:
-            raise Exception(f'Error creating model.')
+            raise Exception(f'Error creating model. Try deleting the config and redownloading if: rm {weights_path + config}')
             
         try:
-            a = torch.load(weights, map_location=torch.device('cpu'))
+            a = torch.load(weights_path + weights, map_location=torch.device('cpu'))
             if 'state_dict' in a:
                 a = a['state_dict']
             self.model.load_state_dict(a, strict=False);
         except:
-            raise Exception(f'Error loading weights, try deleting them and redownloading: rm {weights}')
+            raise Exception(f'Error loading weights, try deleting them and redownloading: rm {weights_path + weights}')
         
         self.resolution = self.config['ddconfig']['resolution']
         self.upsample = torch.nn.Upsample(size=(self.resolution, self.resolution), mode='bilinear', align_corners=False)

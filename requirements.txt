@@ -3,3 +3,4 @@ torchvision
 pytorch_lightning 
 omegaconf 
 einops
+taming-transformers
