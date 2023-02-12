@@ -23,38 +23,21 @@ The main diagram:
 | ----------- | ----------- |
 | <img src="docs/mouth_slightly_open.gif" width="100%"> |  <img src="docs/young.gif" width="100%"> | 
 
-# Smiling Sequence Example
+# Generating a transition sequence
 
 For a predicting of `smiling`
 
 ![gen_sequence.png](docs/gen_sequence.png)
 
-| Counterfactual (smiling removed) | Base reconstruction |
-| ----------- | ----------- |
-| ![gen_bigg_cf.png](docs/gen_big_cf.png) | ![gen_bigg_base.png](docs/gen_big_base.png)  |
+# Multiple different targets
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<img src="docs/latent-shift-diffs.png" width="100%">
 
 
 
 
   
-# Comparison
+# Comparison to traditional methods 
 
 For a predicting of `pointy_nose`
 
