@@ -19,7 +19,7 @@ class VQGAN(torch.nn.Module):
     https://arxiv.org/abs/2012.09841
     """
     
-    def __init__(self, weights, download=True):
+    def __init__(self, weights, config=None, download=True):
         super().__init__()
         
         if weights == "imagenet":
@@ -28,10 +28,8 @@ class VQGAN(torch.nn.Module):
         elif weights == "faceshq":
             weights = "2020-11-13T21-41-45_faceshq.pth"
             config = "2020-11-13T21-41-45_faceshq.yaml"
-        else:
-            raise Exception("No weights specified")
         
-        if (not os.path.isfile(weights)) or (not os.path.isfile(config)):
+        if (not os.path.isfile(weights_path + weights)) or (not os.path.isfile(weights_path + config)):
             if download:
                 utils.download(baseurl + weights, weights_path + weights)
                 utils.download(baseurl + config, weights_path + config)

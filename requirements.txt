@@ -3,4 +3,4 @@ torchvision
 pytorch_lightning 
 omegaconf 
 einops
-taming-transformers
+pytorch-lightning==1.6.5
