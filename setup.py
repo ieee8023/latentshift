@@ -8,7 +8,7 @@ REQUIREMENTS = [i.strip() for i in open("requirements.txt").readlines()]
 
 setuptools.setup(
     name="latentshift",
-    version="0.0.2",
+    version="0.0.4",
     author="Joseph Paul Cohen",
     author_email="joseph@josephpcohen.com",
     description="A method to generate counterfactuals",
