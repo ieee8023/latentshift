@@ -50,15 +50,24 @@ def generate_video(
     # Add reversed so we have an animation cycle
     towrite = list(reversed(imgs)) + list(imgs)
     
-    ys = list(reversed(params["preds"])) + list(params["preds"])
+    if show_pred:
+        ys = list(reversed(params["preds"])) + list(params["preds"])
 
     for n in range(extra_loops):
         towrite += towrite
-        ys += ys
+        if show_pred:
+            ys += ys
 
     for idx, img in enumerate(towrite):
         path = f"{temp_path}/image-{idx}.png"
-        write_frame(img, path=path, pred=ys[idx] if show_pred else None, cmap=cmap, watermark=watermark)
+        write_frame(
+            img, 
+            path=path, 
+            pred=ys[idx] if show_pred else None, 
+            cmap=cmap, 
+            watermark=watermark, 
+            pred_max=max(ys) if show_pred else "",
+        )
 
     # Command for ffmpeg to generate an mp4
     cmd = (
@@ -103,7 +112,7 @@ def full_frame(width=None, height=None):
     plt.autoscale(tight=True)
 
 
-def write_frame(img, path, text=None, pred=None, cmap=None, watermark=True):
+def write_frame(img, path, text=None, pred=None, cmap=None, watermark=True, pred_max=1):
 
     px = 1 / plt.rcParams["figure.dpi"]
     full_frame(img.shape[0] * px, img.shape[1] * px)
@@ -114,7 +123,7 @@ def write_frame(img, path, text=None, pred=None, cmap=None, watermark=True):
         plt.text(
             0.05,
             0.95,
-            f"{float(pred):1.2f} " + "█"*int(pred*100),
+            f"{float(pred):1.2f} " + "█"*int(pred/pred_max*100),
             ha="left",
             va="top",
             transform=plt.gca().transAxes,
