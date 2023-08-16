@@ -45,10 +45,16 @@ For a predicting of `pointy_nose`
 
 # Getting Started
 
+```bash
+$pip install latentshift
+````
+
+
 ```python3
+import latentshift
 # Load classifier and autoencoder
-model = classifiers.FaceAttribute()
-ae = autoencoders.Transformer(weights="celeba")
+model = latentshift.classifiers.FaceAttribute()
+ae = latentshift.autoencoders.Transformer(weights="celeba")
 
 # Load image
 input = torch.randn(1, 3, 1024, 1024)
