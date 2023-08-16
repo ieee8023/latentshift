@@ -1,7 +1,7 @@
 import sys
 import os
 import torch
-import utils
+from . import utils
 import taming.models.vqgan
 import omegaconf
 

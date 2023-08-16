@@ -1,8 +1,8 @@
 import os
-import utils
+from . import utils
 import torch
 import torchvision
-from attribute_classifier import BranchedTiny
+from .attribute_classifier import BranchedTiny
 
 
 class ResNet50(torch.nn.Module):
