@@ -53,8 +53,8 @@ $pip install latentshift
 ```python3
 import latentshift
 # Load classifier and autoencoder
-model = latentshift.classifiers.FaceAttribute()
-ae = latentshift.autoencoders.Transformer(weights="celeba")
+model = latentshift.classifiers.FaceAttribute(download=True)
+ae = latentshift.autoencoders.VQGAN(weights="faceshq", download=True)
 
 # Load image
 input = torch.randn(1, 3, 1024, 1024)
