@@ -22,12 +22,17 @@ class VQGAN(torch.nn.Module):
     def __init__(self, weights, config=None, download=True):
         super().__init__()
         
+        is_gumbel = False
         if weights == "imagenet":
             weights = "vqgan_imagenet_f16_1024.ckpt"
             config = "vqgan_imagenet_f16_1024.yaml"
         elif weights == "faceshq":
             weights = "2020-11-13T21-41-45_faceshq.pth"
             config = "2020-11-13T21-41-45_faceshq.yaml"
+        elif weights == "gumbel_f8":
+            weights = "vqgan_gumbel_f8.ckpt"
+            config = "vqgan_gumbel_f8.yaml"
+            is_gumbel=True
         
         if (not os.path.isfile(weights_path + weights)) or (not os.path.isfile(weights_path + config)):
             if download:
@@ -39,7 +44,10 @@ class VQGAN(torch.nn.Module):
         try: 
             c = omegaconf.OmegaConf.load(weights_path + config)
             self.config = c['model']['params']
-            self.model = taming.models.vqgan.VQModel(**self.config)
+            if is_gumbel:
+                self.model = taming.models.vqgan.GumbelVQ(**self.config)
+            else:
+                self.model = taming.models.vqgan.VQModel(**self.config)
         except:
             raise Exception(f'Error creating model. Try deleting the config and redownloading if: rm {weights_path + config}')
             
