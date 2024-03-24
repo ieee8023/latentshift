@@ -6,7 +6,7 @@ import taming.models.vqgan
 import omegaconf
 
 baseurl = "https://github.com/ieee8023/latentshift/releases/download/weights/"
-weights_path = "./weights/"
+weights_path = utils.get_cache_folder()
 
 
 class VQGAN(torch.nn.Module):

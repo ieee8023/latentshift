@@ -3,6 +3,8 @@ import sys
 import requests
 import pathlib
 
+def get_cache_folder():
+    return os.path.expanduser(os.path.join("~", ".cache", "latentshift"))
 
 def download(url: str, filename: str):
     """Based on https://sumit-ghosh.com/articles/python-download-progress-bar/"""

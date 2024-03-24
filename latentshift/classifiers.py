@@ -5,6 +5,8 @@ import torchvision
 from .attribute_classifier import BranchedTiny
 from torchvision.models import resnet50, ResNet50_Weights
 
+weights_path = utils.get_cache_folder()
+
 class ResNet50(torch.nn.Module):
     def __init__(self):
         super().__init__()
@@ -30,7 +32,7 @@ class FaceAttribute(torch.nn.Module):
     def __init__(self, download=False):
         super().__init__()
 
-        filename = "./weights/BranchedTiny.ckpt"
+        filename = weights_path + "BranchedTiny.ckpt"
         url = "https://github.com/ieee8023/latentshift/releases/download/weights/BranchedTiny.ckpt"
         
         if not os.path.isfile(filename):
@@ -62,7 +64,7 @@ class BirdClassifier(torch.nn.Module):
     def __init__(self, download=False):
         super().__init__()
 
-        filename = "./weights/cub2011-deit-tiny.zip"
+        filename = weights_path + "cub2011-deit-tiny.zip"
         url = "https://github.com/ieee8023/latentshift/releases/download/weights/cub2011-deit-tiny.zip"
         
         if not os.path.isfile(filename):
