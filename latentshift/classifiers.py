@@ -295,10 +295,63 @@ class ImageNetClassifier(torch.nn.Module):
         self.model = resnet50(weights=self.weights).eval()
 
         self.targets = self.weights.meta['categories']
+        self.targets = [t.replace(' ', '_') for t in self.targets]
         
     def forward(self, x):
         x = self.weights.transforms()(x)
         return self.model(x)
 
+
+class WaterbirdClassifier(torch.nn.Module):
+    def __init__(self, weights = 'baseline', download=False):
+        """weights = 'baseline', 'place', 'withdro'
+        """
+        super().__init__()
+
+        if weights.startswith('/'):
+            # if full path specified
+            weights_ckpt = weights
+        else:
+            weights = 'waterbirds_' + weights + '.pth'
+            if (not os.path.isfile(weights_path + weights)):
+                if download:
+                    utils.download(baseurl + weights, weights_path + weights)
+                else:
+                    print("No weights found, specify download=True to download them.")
+            
+            weights_ckpt = weights_path + weights
         
+        self.model = torch.load(weights_ckpt, map_location='cpu')
+        self.targets = ['Landbird', 'Waterbird']
+
+        scale = 256.0/224.0
+        target_resolution = 224
+        
+        self.transform = torchvision.transforms.Compose([
+            torchvision.transforms.Resize((int(target_resolution*scale), int(target_resolution*scale))),
+            torchvision.transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        ])
+        
+    def forward(self, x):
+        x = self.transform(x)
+        return self.model(x)
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
         

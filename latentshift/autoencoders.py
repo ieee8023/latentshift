@@ -23,26 +23,34 @@ class VQGAN(torch.nn.Module):
         super().__init__()
         
         is_gumbel = False
-        if weights == "imagenet":
+        if weights == "imagenet_f16_1024":
             weights = "vqgan_imagenet_f16_1024.ckpt"
             config = "vqgan_imagenet_f16_1024.yaml"
         elif weights == "faceshq":
             weights = "2020-11-13T21-41-45_faceshq.pth"
             config = "2020-11-13T21-41-45_faceshq.yaml"
-        elif weights == "gumbel_f8":
+        elif weights == "openimages_gumbel_f8":
             weights = "vqgan_gumbel_f8.ckpt"
             config = "vqgan_gumbel_f8.yaml"
             is_gumbel=True
-        
-        if (not os.path.isfile(weights_path + weights)) or (not os.path.isfile(weights_path + config)):
-            if download:
-                utils.download(baseurl + weights, weights_path + weights)
-                utils.download(baseurl + config, weights_path + config)
-            else:
-                print("No weights found, specify download=True to download them.")
+
+        if weights.startswith('/'):
+            # if full path specified
+            weights_ckpt = weights
+            weights_config = config
+        else:
+            if (not os.path.isfile(weights_path + weights)) or (not os.path.isfile(weights_path + config)):
+                if download:
+                    utils.download(baseurl + weights, weights_path + weights)
+                    utils.download(baseurl + config, weights_path + config)
+                else:
+                    print("No weights found, specify download=True to download them.")
+            
+            weights_ckpt = weights_path + weights
+            weights_config = weights_path + config
         
         try: 
-            c = omegaconf.OmegaConf.load(weights_path + config)
+            c = omegaconf.OmegaConf.load(weights_config)
             self.config = c['model']['params']
             if is_gumbel:
                 self.model = taming.models.vqgan.GumbelVQ(**self.config)
@@ -52,7 +60,7 @@ class VQGAN(torch.nn.Module):
             raise Exception(f'Error creating model. Try deleting the config and redownloading if: rm {weights_path + config}')
             
         try:
-            a = torch.load(weights_path + weights, map_location=torch.device('cpu'))
+            a = torch.load(weights_ckpt, map_location=torch.device('cpu'))
             if 'state_dict' in a:
                 a = a['state_dict']
             self.model.load_state_dict(a, strict=False);

@@ -228,7 +228,8 @@ def make_pretty(styler):
 
 def compute_matrix(
     df,
-    cols: list,
+    cols: list = None,
+    rows: list = None,
     base_change_limit: float = 0.3,
     restrict_rows: bool = True,
     style: bool = False,
@@ -239,7 +240,7 @@ def compute_matrix(
     so the diagonal will be the intersection.
     """
     df = df.copy()
-    
+
     if base_change_limit > 0:
         df['base_change'] = df.preds.apply(compute_basechange)
         df = df[(df['base_change'] > base_change_limit)]
@@ -247,12 +248,19 @@ def compute_matrix(
             print('Not enough changes')
     
     if restrict_rows:
+        if cols is None:
+            cols = df.models_target.unique()
+        
         grouped = df[df.model1_target.isin(cols)].groupby(['model1_target','models_target'])[[target]].mean()
         g_agg = grouped.unstack(1).droplevel(0,1).round(2)
         g_agg = g_agg.loc[cols][cols]
     else:
         grouped = df.groupby(['model1_target','models_target'])[[target]].mean()
         g_agg = grouped.unstack(1).droplevel(0,1).round(2)
+
+    if rows is not None:
+        g_agg = g_agg.loc[rows]
+    if cols is not None:
         g_agg = g_agg[cols]
 
     if style:
