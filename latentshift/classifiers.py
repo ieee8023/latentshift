@@ -5,6 +5,7 @@ import torchvision
 from .attribute_classifier import BranchedTiny
 from torchvision.models import resnet50, ResNet50_Weights
 
+base_url = 'https://github.com/ieee8023/latentshift/releases/download/weights/'
 weights_path = utils.get_cache_folder()
 
 class ResNet50(torch.nn.Module):
@@ -308,14 +309,19 @@ class WaterbirdClassifier(torch.nn.Module):
         """
         super().__init__()
 
+        available_weights = ['baseline', 'place', 'withdro']
+
         if weights.startswith('/'):
             # if full path specified
             weights_ckpt = weights
         else:
+            if not weights in available_weights:
+                raise Exception(f'weights must be one of {available_weights}')
+                
             weights = 'waterbirds_' + weights + '.pth'
             if (not os.path.isfile(weights_path + weights)):
                 if download:
-                    utils.download(baseurl + weights, weights_path + weights)
+                    utils.download(base_url + weights, weights_path + weights)
                 else:
                     print("No weights found, specify download=True to download them.")
             
