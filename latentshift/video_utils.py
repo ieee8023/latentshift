@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import numpy
 import shutil
 import subprocess
+import numpy as np
+import skimage, skimage.transform
 
 def generate_video(
     params: dict,
@@ -16,6 +18,7 @@ def generate_video(
     verbose: bool = True,
     extra_loops: int = 0,
     cmap: str = None,
+    resize = None,
 ):
     """Generate a video from the generated images.
 
@@ -47,6 +50,11 @@ def generate_video(
 
     imgs = [h.transpose(1, 2, 0) for h in params["generated_images"]]
 
+    if not resize is None:
+        if not type(resize) == tuple:
+            resize = (resize, resize)
+        imgs = [skimage.transform.resize(h, resize) for h in imgs]
+
     # Add reversed so we have an animation cycle
     towrite = list(reversed(imgs)) + list(imgs)
     
@@ -58,6 +66,8 @@ def generate_video(
         if show_pred:
             ys += ys
 
+    vminmax =  np.asarray(towrite).min(), np.asarray(towrite).max(), 
+    
     for idx, img in enumerate(towrite):
         path = f"{temp_path}/image-{idx}.png"
         write_frame(
@@ -67,6 +77,7 @@ def generate_video(
             cmap=cmap, 
             watermark=watermark, 
             pred_max=max(ys) if show_pred else "",
+            vminmax=vminmax,
         )
 
     # Command for ffmpeg to generate an mp4
@@ -112,12 +123,15 @@ def full_frame(width=None, height=None):
     plt.autoscale(tight=True)
 
 
-def write_frame(img, path, text=None, pred=None, cmap=None, watermark=True, pred_max=1):
+def write_frame(img, path, text=None, pred=None, cmap=None, watermark=True, pred_max=1, vminmax=None):
 
     px = 1 / plt.rcParams["figure.dpi"]
     full_frame(img.shape[0] * px, img.shape[1] * px)
-    plt.imshow(img, interpolation="none", cmap=cmap)
-
+    if not vminmax is None:
+        plt.imshow(img, interpolation="none", cmap=cmap, vmin=vminmax[0], vmax=vminmax[1])
+    else:
+        plt.imshow(img, interpolation="none", cmap=cmap)
+        
     if pred:
         # Show pred as bar in upper left
         plt.text(
