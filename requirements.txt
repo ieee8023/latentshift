@@ -4,3 +4,4 @@ omegaconf
 einops
 pytorch-lightning==1.9.5
 taming-transformers
+scikit-image
