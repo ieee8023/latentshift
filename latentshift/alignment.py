@@ -139,6 +139,36 @@ def compute_alignment(
     
     
 
+    return compute_alignment_from_output(
+        output = output,
+        model1 = model1,
+        models = models,
+        ae = ae,
+        return_output=return_output,
+        seperate_models=seperate_models,
+    )
+
+
+def compute_alignment_from_output(
+    output: dict,
+    model1,
+    models: list,
+    ae,
+    return_output=False,
+    seperate_models=False,
+):
+    """Computes the alignment between classifier outputs for a counterfactual image.
+    
+    
+    seperate_models: If false the average between all models is computed. If true then
+        each model is computed against `model1` and multiple results are returned. This
+        is for efficiency because the CF generation process is costly so we can compare 
+        multiple classifiers while only computing one CF.
+        
+    """
+    
+    device = next(model1.parameters()).device
+
     base_clf_name = f'*{model1}'
     base_clf_preds = []
     for img in output['generated_images']:
@@ -156,7 +186,7 @@ def compute_alignment(
 
     for target_models in models:
         result = {}
-        result['lambdas'] = list(output['lambdas'])
+        #result['lambdas'] = list(output['lambdas'])
 
         if seperate_models:
             result['model1_target'] = model1.targets[0]
@@ -203,8 +233,6 @@ def compute_alignment(
         assert len(results) == 1
         return results[0]
 
-
-
 def compute_basechange(preds):
     if type(preds) == str:
         preds = eval(preds)
@@ -234,6 +262,8 @@ def compute_matrix(
     restrict_rows: bool = True,
     style: bool = False,
     target: str = 'rchange',
+    with_stderr: bool = False,
+    precision: int = 3,
 ):
     """Compute an alignment matrix from an alignment dataframe.
     `cols` is the list of columns to plot. The matrix will be ordered using this 
@@ -251,13 +281,26 @@ def compute_matrix(
         if cols is None:
             cols = df.models_target.unique()
         
-        grouped = df[df.model1_target.isin(cols)].groupby(['model1_target','models_target'])[[target]].mean()
-        g_agg = grouped.unstack(1).droplevel(0,1).round(2)
+        grouped = df[df.model1_target.isin(cols)].groupby(['model1_target','models_target'])[[target]]
+        
+        g_agg = grouped.mean().unstack(1).droplevel(0,1)#.round(2)
         g_agg = g_agg.loc[cols][cols]
+        
+        g_agg_stderr = grouped.std().unstack(1).droplevel(0,1)
+        g_agg_stderr = (g_agg_stderr/grouped.count().unstack(1).droplevel(0,1).map(np.sqrt))#.round(2)
+        g_agg_stderr = g_agg_stderr.loc[cols][cols]
+        
     else:
-        grouped = df.groupby(['model1_target','models_target'])[[target]].mean()
-        g_agg = grouped.unstack(1).droplevel(0,1).round(2)
+        grouped = df.groupby(['model1_target','models_target'])[[target]]
+        g_agg = grouped.mean().unstack(1).droplevel(0,1)#.round(4)
+        g_agg_stderr = grouped.std().unstack(1).droplevel(0,1)
+        g_agg_stderr = (g_agg_stderr/grouped.count().unstack(1).droplevel(0,1).map(np.sqrt))#.round(2)
 
+    if with_stderr:
+        stdevs = g_agg_stderr.values.flatten().tolist()
+        stdevs.reverse()
+        g_agg = g_agg.map(lambda x: f'{x:.{precision}f}±{stdevs.pop():.{precision}f}')
+    
     if rows is not None:
         g_agg = g_agg.loc[rows]
     if cols is not None:
