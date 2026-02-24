@@ -7,7 +7,7 @@
 
 Read the paper about Latent Shift: https://arxiv.org/abs/2102.09475
 
-Webpage for the project: https://latentshift.github.io/
+Webpage for the project: https://latentshift.github.io/ and a followup paper: https://arxiv.org/abs/2312.02186
 
 Watch a video: https://www.youtube.com/watch?v=1fxSDP8DheI
 
